@@ -1,25 +1,42 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import './global.css';
+import { Header, Banner, Stats, Chart } from './components';
+import { globalStyles, Container, Footer } from './StyledApp';
+import { fetchAPI } from './api';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends React.Component {
+  state = {
+    data: {},
+    country: ""
+  };
+
+  async componentDidMount() {
+    const fetchedAPI = await fetchAPI();
+    this.setState({ data: fetchedAPI });
+  }
+
+  handleCountryChange = async (country) => {
+    const data = await fetchAPI(country);
+    this.setState({ data, country });
+  };
+
+  render() {
+    globalStyles();
+    const { data, country } = this.state;
+
+    return (
+      <>
+        <Header />
+        <Container>
+          <Banner className="flex-item" />
+          <Stats data={data} handleCountryChange={this.handleCountryChange} />
+          <Chart data={data} country={country} />
+
+          <Footer>{new Date().getFullYear()}</Footer>
+        </Container>
+      </>
+    );
+  }
 }
 
 export default App;
